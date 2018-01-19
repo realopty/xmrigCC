@@ -35,6 +35,11 @@
 #endif
 
 
+#ifndef XMRIG_NO_HTTPD
+#   include <microhttpd.h>
+#endif
+
+
 #include "Cpu.h"
 #include "donate.h"
 #include "net/Url.h"
@@ -843,6 +848,10 @@ void Options::showVersion()
     "\n");
 
     printf("\nlibuv/%s\n", uv_version_string());
+
+#   ifndef XMRIG_NO_HTTPD
+    printf("libmicrohttpd/%s\n", MHD_get_version());
+#   endif
 }
 
 
