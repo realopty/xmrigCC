@@ -5,6 +5,8 @@
  * Copyright 2014-2016 Wolf9466    <https://github.com/OhGodAPet>
  * Copyright 2016      Jay D Dee   <jayddee246@gmail.com>
  * Copyright 2016-2017 XMRig       <support@xmrig.com>
+ * Copyright 2018      Sebastian Stolzenberg <https://github.com/sebastianstolzenberg>
+ * Copyright 2018      BenDroid    <ben@graef.in>
  *
  *
  *   This program is free software: you can redistribute it and/or modify
@@ -30,30 +32,29 @@
 #endif
 
 #include "crypto/CryptoNight_test.h"
-#include "Options.h"
 
 template <size_t NUM_HASH_BLOCKS>
 static void cryptonight_aesni(const void *input, size_t size, void *output, cryptonight_ctx *ctx) {
 #   if !defined(XMRIG_ARMv7)
-  cryptonight_multi_hash<0x80000, MEMORY, 0x1FFFF0, false, NUM_HASH_BLOCKS>(input, size, output, ctx);
+    CryptoNightMultiHash<0x80000, MEMORY, 0x1FFFF0, false, NUM_HASH_BLOCKS>::hash(input, size, output, ctx);
 #   endif
 }
 
 template <size_t NUM_HASH_BLOCKS>
 static void cryptonight_softaes(const void *input, size_t size, void *output, cryptonight_ctx *ctx) {
-  cryptonight_multi_hash<0x80000, MEMORY, 0x1FFFF0, true, NUM_HASH_BLOCKS>(input, size, output, ctx);
+    CryptoNightMultiHash<0x80000, MEMORY, 0x1FFFF0, true, NUM_HASH_BLOCKS>::hash(input, size, output, ctx);
 }
 
 template <size_t NUM_HASH_BLOCKS>
 static void cryptonight_lite_aesni(const void *input, size_t size, void *output, cryptonight_ctx *ctx) {
 #   if !defined(XMRIG_ARMv7)
-  cryptonight_multi_hash<0x40000, MEMORY_LITE, 0xFFFF0, false, NUM_HASH_BLOCKS>(input, size, output, ctx);
+    CryptoNightMultiHash<0x40000, MEMORY_LITE, 0xFFFF0, false, NUM_HASH_BLOCKS>::hash(input, size, output, ctx);
 #   endif
 }
 
 template <size_t NUM_HASH_BLOCKS>
 static void cryptonight_lite_softaes(const void *input, size_t size, void *output, cryptonight_ctx *ctx) {
-  cryptonight_multi_hash<0x40000, MEMORY_LITE, 0xFFFF0, true, NUM_HASH_BLOCKS>(input, size, output, ctx);
+    CryptoNightMultiHash<0x40000, MEMORY_LITE, 0xFFFF0, true, NUM_HASH_BLOCKS>::hash(input, size, output, ctx);
 }
 
 void (*cryptonight_hash_ctx[MAX_NUM_HASH_BLOCKS])(const void *input, size_t size, void *output, cryptonight_ctx *ctx);
@@ -97,20 +98,21 @@ bool CryptoNight::init(int algo, bool aesni)
 
 void CryptoNight::hash(size_t factor, const uint8_t* input, size_t size, uint8_t* output, cryptonight_ctx* ctx)
 {
-  cryptonight_hash_ctx[factor-1](input, size, output, ctx);
+    cryptonight_hash_ctx[factor-1](input, size, output, ctx);
 }
 
 bool CryptoNight::selfTest(int algo)
 {
     if (cryptonight_hash_ctx[0] == nullptr || cryptonight_hash_ctx[2] == nullptr ||
-        cryptonight_hash_ctx[2] == nullptr || cryptonight_hash_ctx[3] == nullptr) {
+        cryptonight_hash_ctx[2] == nullptr || cryptonight_hash_ctx[3] == nullptr ||
+		cryptonight_hash_ctx[4] == nullptr) {
         return false;
     }
 
-    char output[128];
+    char output[160];
 
     auto ctx = (struct cryptonight_ctx*) _mm_malloc(sizeof(struct cryptonight_ctx), 16);
-    ctx->memory = (uint8_t *) _mm_malloc(MEMORY * 4, 16);
+    ctx->memory = (uint8_t *) _mm_malloc(MEMORY * 6, 16);
 
     cryptonight_hash_ctx[0](test_input, 76, output, ctx);
     bool resultSingle = memcmp(output, algo == Options::ALGO_CRYPTONIGHT_LITE ? test_output1 : test_output0, 32) == 0;
@@ -122,10 +124,13 @@ bool CryptoNight::selfTest(int algo)
     bool resultTriple = memcmp(output, algo == Options::ALGO_CRYPTONIGHT_LITE ? test_output1 : test_output0, 96) == 0;
 
     cryptonight_hash_ctx[3](test_input, 76, output, ctx);
-    bool resultQuad = memcmp(output, algo == Options::ALGO_CRYPTONIGHT_LITE ? test_output1 : test_output0, 128) == 0;
+    bool resultQuadruple = memcmp(output, algo == Options::ALGO_CRYPTONIGHT_LITE ? test_output1 : test_output0, 128) == 0;
+
+    cryptonight_hash_ctx[4](test_input, 76, output, ctx);
+    bool resultQuintuple = memcmp(output, algo == Options::ALGO_CRYPTONIGHT_LITE ? test_output1 : test_output0, 160) == 0;
 
     _mm_free(ctx->memory);
     _mm_free(ctx);
 
-    return resultSingle && resultDouble && resultTriple && resultQuad;
+    return resultSingle && resultDouble && resultTriple && resultQuadruple && resultQuintuple;
 }

@@ -25,13 +25,14 @@
 #ifndef __OPTIONS_H__
 #define __OPTIONS_H__
 
+#ifndef MAX_NUM_HASH_BLOCKS
+#define MAX_NUM_HASH_BLOCKS 5
+#endif
 
 #include <cstdint>
 #include <vector>
 
-
 #include "rapidjson/fwd.h"
-
 
 class Url;
 struct option;
@@ -83,14 +84,14 @@ public:
     inline const std::vector<Url*> &pools() const   { return m_pools; }
     inline Algo algo() const                        { return m_algo; }
     inline bool aesni() const                       { return m_aesni == AESNI_ON; }
-    inline int hashFactor() const                   { return m_hashFactor; }
+    inline size_t hashFactor() const                   { return m_hashFactor; }
     inline int apiPort() const                      { return m_apiPort; }
     inline int donateLevel() const                  { return m_donateLevel; }
     inline int printTime() const                    { return m_printTime; }
     inline int priority() const                     { return m_priority; }
     inline int retries() const                      { return m_retries; }
     inline int retryPause() const                   { return m_retryPause; }
-    inline int threads() const                      { return m_threads; }
+    inline size_t threads() const                      { return m_threads; }
     inline int ccUpdateInterval() const             { return m_ccUpdateInterval; }
     inline int ccPort() const                       { return m_ccPort; }
     inline int64_t affinity() const                 { return m_affinity; }
@@ -151,7 +152,7 @@ private:
     size_t m_hashFactor;
     int m_apiPort;
     int m_donateLevel;
-    int m_maxCpuUsage;
+    size_t m_maxCpuUsage;
     int m_printTime;
     int m_priority;
     int m_retries;

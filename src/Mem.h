@@ -5,6 +5,8 @@
  * Copyright 2014-2016 Wolf9466    <https://github.com/OhGodAPet>
  * Copyright 2016      Jay D Dee   <jayddee246@gmail.com>
  * Copyright 2016-2017 XMRig       <support@xmrig.com>
+ * Copyright 2018      Sebastian Stolzenberg <https://github.com/sebastianstolzenberg>
+ * Copyright 2018      BenDroid    <ben@graef.in>
  *
  *
  *   This program is free software: you can redistribute it and/or modify
@@ -38,7 +40,7 @@ struct cryptonight_ctx;
 class Mem
 {
 public:
-    typedef std::bitset<sizeof(int64_t)> ThreadBitSet;
+    typedef std::bitset<64> ThreadBitSet;
     enum Flags {
         HugepagesAvailable = 1,
         HugepagesEnabled   = 2,
@@ -49,8 +51,8 @@ public:
     static cryptonight_ctx *create(int threadId);
     static void release();
 
-    static inline int hashFactor()         { return m_hashFactor; }
-    static inline int getThreadHashFactor(int threadId)
+    static inline size_t hashFactor()         { return m_hashFactor; }
+    static inline size_t getThreadHashFactor(int threadId)
     {
         return (m_multiHashThreadMask.all() ||
                 m_multiHashThreadMask.test(threadId)) ? m_hashFactor : 1;
@@ -58,13 +60,13 @@ public:
     static inline bool isHugepagesAvailable() { return (m_flags & HugepagesAvailable) != 0; }
     static inline bool isHugepagesEnabled()   { return (m_flags & HugepagesEnabled) != 0; }
     static inline int flags()                 { return m_flags; }
-    static inline int threads()               { return m_threads; }
+    static inline size_t threads()            { return m_threads; }
 
 private:
-    static int m_hashFactor;
+    static size_t m_hashFactor;
+    static size_t m_threads;
     static int m_algo;
     static int m_flags;
-    static int m_threads;
     static ThreadBitSet m_multiHashThreadMask;
     static size_t m_memorySize;
     VAR_ALIGN(16, static uint8_t *m_memory);

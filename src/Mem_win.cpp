@@ -148,7 +148,7 @@ bool Mem::allocate(const Options* options)
 {
     m_algo       = options->algo();
     m_threads    = options->threads();
-    m_multiHash = options->multiHash();
+    m_hashFactor = options->hashFactor();
     m_multiHashThreadMask = Mem::ThreadBitSet(options->multiHashThreadMask());
     m_memorySize = 0;
 

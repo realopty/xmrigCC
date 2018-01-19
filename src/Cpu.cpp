@@ -53,7 +53,7 @@ CpuImpl::CpuImpl()
 }
 
 void CpuImpl::optimizeParameters(size_t& threadsCount, size_t& hashFactor,
-                                 Options::Algo algo, int maxCpuUsage, bool safeMode)
+                                 Options::Algo algo, size_t maxCpuUsage, bool safeMode)
 {
     // limits hashfactor to maximum possible value defined by compiler flag
     hashFactor = std::min(hashFactor, static_cast<size_t>(MAX_NUM_HASH_BLOCKS));
@@ -76,7 +76,7 @@ void CpuImpl::optimizeParameters(size_t& threadsCount, size_t& hashFactor,
             break;
     }
 
-    size_t maximumReasonableFactor = std::max(cache / algoBlockSize, 1ul);
+    size_t maximumReasonableFactor = std::max(cache / algoBlockSize, static_cast<size_t>(1ul));
     size_t maximumReasonableThreadCount = std::min(maximumReasonableFactor, m_totalThreads);
     size_t maximumReasonableHashFactor = std::min(maximumReasonableFactor, static_cast<size_t>(MAX_NUM_HASH_BLOCKS));
 
@@ -180,7 +180,7 @@ void Cpu::init()
 }
 
 void Cpu::optimizeParameters(size_t& threadsCount, size_t& hashFactor, Options::Algo algo,
-                               int maxCpuUsage, bool safeMode)
+                               size_t maxCpuUsage, bool safeMode)
 {
     CpuImpl::instance().optimizeParameters(threadsCount, hashFactor, algo, maxCpuUsage, safeMode);
 }
@@ -205,27 +205,27 @@ const char* Cpu::brand()
     return CpuImpl::instance().brand();
 }
 
-int Cpu::cores()
+size_t Cpu::cores()
 {
     return CpuImpl::instance().cores();
 }
 
-int Cpu::l2()
+size_t Cpu::l2()
 {
     return CpuImpl::instance().l2();
 }
 
-int Cpu::l3()
+size_t Cpu::l3()
 {
     return CpuImpl::instance().l3();
 }
 
-int Cpu::sockets()
+size_t Cpu::sockets()
 {
     return CpuImpl::instance().sockets();
 }
 
-int Cpu::threads()
+size_t Cpu::threads()
 {
     return CpuImpl::instance().threads();
 }

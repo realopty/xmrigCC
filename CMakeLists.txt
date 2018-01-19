@@ -10,7 +10,6 @@ option(WITH_AEON      "CryptoNight-Lite support" ON)
 option(WITH_HTTPD     "HTTP REST API" OFF)
 option(WITH_CC_CLIENT "CC Client" ON)
 option(WITH_CC_SERVER "CC Server" ON)
-set(MAX_NUM_HASH_BLOCKS 8)
 
 include (CheckIncludeFile)
 include (cmake/cpu.cmake)
@@ -99,7 +98,6 @@ endif()
 add_definitions(/D__STDC_FORMAT_MACROS)
 add_definitions(/DUNICODE)
 #add_definitions(/DAPP_DEBUG)
-add_definitions(/DMAX_NUM_HASH_BLOCKS=${MAX_NUM_HASH_BLOCKS})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
@@ -183,28 +181,28 @@ include_directories(src/3rdparty)
 include_directories(${UV_INCLUDE_DIR})
 
 add_library(xmrig_common STATIC ${SOURCES_COMMON})
-add_library(xmrig_os_dependencies STATIC ${SOURCES_OS})
+add_library(xmrig_os_dependencies STATIC ${SOURCES_OS} ${SOURCES_SYSLOG})
 add_library(xmrig_cpuid STATIC ${SOURCES_CPUID})
-add_library(xmrig_syslog STATIC ${SOURCES_SYSLOG})
+
 if (WITH_CC_SERVER OR WITH_CC_CLIENT)
     add_library(xmrig_cc_common STATIC ${SOURCES_CC_COMMON})
 endif (WITH_CC_SERVER OR WITH_CC_CLIENT)
 
-add_executable(xmrigMiner ${SOURCES} ${SOURCES_CRYPTO} ${HTTPD_SOURCES} ${SOURCES_CC_CLIENT})
-target_link_libraries(xmrigMiner
-        xmrig_common xmrig_cpuid xmrig_os_dependencies xmrig_syslog
+add_executable(xmrigMiner ${SOURCES} ${SOURCES_CRYPTO} ${HTTPD_SOURCES} ${SOURCES_CC_CLIENT} res/app.rc)
+
+target_link_libraries(xmrigMiner xmrig_common xmrig_cpuid xmrig_os_dependencies
         ${UV_LIBRARIES} ${MHD_LIBRARY} ${EXTRA_LIBS} ${CPUID_LIB})
+
 if (WITH_CC_CLIENT)
     target_link_libraries(xmrigMiner xmrig_cc_common)
 endif (WITH_CC_CLIENT)
 
-
 add_executable(xmrigDaemon src/cc/XMRigd.cpp res/app.rc)
 
 if (WITH_CC_SERVER AND MHD_FOUND)
-    add_executable(xmrigCCServer ${SOURCES_CC_SERVER})
+    add_executable(xmrigCCServer ${SOURCES_CC_SERVER} res/app.rc)
     target_link_libraries(xmrigCCServer
-            xmrig_common xmrig_cpuid xmrig_os_dependencies xmrig_syslog xmrig_cc_common
+            xmrig_common xmrig_cpuid xmrig_os_dependencies xmrig_cc_common
             ${UV_LIBRARIES} ${MHD_LIBRARY} ${EXTRA_LIBS} ${CPUID_LIB})
     set_target_properties(xmrigCCServer PROPERTIES COMPILE_FLAGS "-DXMRIG_CC_SERVER ${SHARED_FLAGS}")
 endif()

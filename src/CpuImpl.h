@@ -38,17 +38,17 @@ public:
     void init();
 
     void optimizeParameters(size_t& threadsCount, size_t& hashFactor, Options::Algo algo,
-                            int maxCpuUsage, bool safeMode);
+                            size_t maxCpuUsage, bool safeMode);
     void setAffinity(int id, uint64_t mask);
 
     bool hasAES();
     bool isX64();
     const char *brand() { return m_brand; }
-    int cores()         { return m_totalCores; }
-    int l2()            { return m_l2_cache; }
-    int l3()            { return m_l3_cache; }
-    int sockets()       { return m_sockets; }
-    int threads()       { return m_totalThreads; }
+    size_t l2()            { return m_l2_cache; }
+    size_t l3()            { return m_l3_cache; }
+    size_t cores()         { return m_totalCores; }
+    size_t sockets()       { return m_sockets; }
+    size_t threads()       { return m_totalThreads; }
     size_t availableCache();
 
 private:
@@ -57,8 +57,8 @@ private:
     bool m_l2_exclusive;
     char m_brand[64];
     int m_flags;
-    int m_l2_cache;
-    int m_l3_cache;
+    size_t m_l2_cache;
+    size_t m_l3_cache;
     size_t m_sockets;
     size_t m_totalCores;
     size_t m_totalThreads;
