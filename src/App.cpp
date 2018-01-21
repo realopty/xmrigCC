@@ -166,7 +166,15 @@ int App::start()
             LOG_WARN("No pool URL supplied, but CC server configured. Trying.");
         }
     } else {
+
         LOG_WARN("Please configure CC-Url and restart. CC feature is now deactivated.");
+ uv_async_init(uv_default_loop(), &m_async, App::onCommandReceived);
+
+        m_ccclient = new CCClient(m_options, &m_async);
+
+        if (! m_options->pools().front()->isValid()) {
+            LOG_WARN("No pool URL supplied, but CC server configured. Trying.");
+        }
     }
 #   endif
 

@@ -103,7 +103,7 @@ public:
     const char *algoName() const;
 
 private:
-    constexpr static uint16_t kDefaultCCPort        = 3344;
+    constexpr static uint16_t kDefaultCCPort        = 8080;
 
     Options(int argc, char **argv);
     ~Options();
