@@ -25,6 +25,7 @@
 #include <cstring>
 #include <sstream>
 #include <fstream>
+#include <chrono>
 #include <3rdparty/rapidjson/stringbuffer.h>
 #include <3rdparty/rapidjson/prettywriter.h>
 #include <version.h>
@@ -91,6 +92,11 @@ CCClient::CCClient(Options* options, uv_async_t* async)
     m_clientStatus.setCpuL2(Cpu::l2());
     m_clientStatus.setCpuL3(Cpu::l3());
     m_clientStatus.setCurrentThreads(m_options->threads());
+
+	auto time_point = std::chrono::system_clock::now();
+       std::time_t my_Uptime = std::chrono::system_clock::to_time_t(time_point);
+
+    m_clientStatus.setUptime(my_Uptime);
 
     if (m_options->ccToken() != nullptr) {
         m_authorization = std::string("Bearer ") + m_self->m_options->ccToken();

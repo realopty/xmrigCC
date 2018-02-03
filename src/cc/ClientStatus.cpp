@@ -52,7 +52,8 @@ ClientStatus::ClientStatus()
       m_sharesTotal(0),
       m_hashesTotal(0),
       m_avgTime(0),
-      m_lastStatusUpdate(0)
+      m_lastStatusUpdate(0),
+      m_Uptime(0)
 {
 
 }
@@ -321,6 +322,17 @@ std::time_t ClientStatus::getLastStatusUpdate() const
     return m_lastStatusUpdate;
 }
 
+std::time_t ClientStatus::getUptime() const
+{
+    return m_Uptime;
+}
+
+
+void ClientStatus::setUptime(uint64_t Uptime)
+{
+    m_Uptime = Uptime;
+}
+
 bool ClientStatus::parseFromJson(const rapidjson::Document& document)
 {
     bool result = false;
@@ -436,6 +448,10 @@ bool ClientStatus::parseFromJson(const rapidjson::Document& document)
         auto time_point = std::chrono::system_clock::now();
         m_lastStatusUpdate = std::chrono::system_clock::to_time_t(time_point);
 
+	if (clientStatus.HasMember("uptime")) {
+            m_Uptime = clientStatus["uptime"].GetUint64();
+        }
+
         result = true;
     } else {
         LOG_ERR("Parse Error, JSON does not contain: control_command");
@@ -482,6 +498,7 @@ rapidjson::Value ClientStatus::toJson(rapidjson::MemoryPoolAllocator<rapidjson::
     clientStatus.AddMember("avg_time", m_avgTime, allocator);
 
     clientStatus.AddMember("last_status_update", static_cast<uint64_t >(m_lastStatusUpdate), allocator);
+    clientStatus.AddMember("uptime", static_cast<uint64_t >(m_Uptime), allocator);
 
     return clientStatus;
 }

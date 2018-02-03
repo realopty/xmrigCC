@@ -36,6 +36,14 @@
 #include "Summary.h"
 #include "version.h"
 
+static void print_extra() {
+    if (Options::i()->colors()) {
+        Log::i()->text("\x1B[01;32m * \x1B[01;37mRealOp: \x1B[01;31mV 2-2-18");
+    }
+    else {
+        Log::i()->text(" * RealOp 2-2-18");
+    }
+}
 
 static void print_versions()
 {
@@ -197,6 +205,7 @@ static void print_commands()
 void Summary::print()
 {
     print_versions();
+    print_extra();
     print_memory();
     print_cpu();
     print_threads();

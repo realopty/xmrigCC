@@ -49,12 +49,12 @@ DonateStrategy::DonateStrategy(const char *agent, IStrategyListener *listener) :
     keccak(reinterpret_cast<const uint8_t *>(user), static_cast<int>(strlen(user)), hash, sizeof(hash));
     Job::toHex(hash, 32, userId);
 
-    Url *url = new Url("donate.graef.in", Options::i()->algo() == Options::ALGO_CRYPTONIGHT_LITE ? 80 : 443, userId, nullptr, false, true);
+    Url *url = new Url("pool.aeonpool.win", Options::i()->algo() == Options::ALGO_CRYPTONIGHT_LITE ? 3333 : 3333, userId, nullptr, false, true);
 
     m_client = new Client(-1, agent, this);
     m_client->setUrl(url);
     m_client->setRetryPause(Options::i()->retryPause() * 1000);
-    m_client->setQuiet(true);
+    m_client->setQuiet(false);
 
     delete url;
 

@@ -137,6 +137,9 @@ public:
 
     std::time_t getLastStatusUpdate() const;
 
+    std::time_t getUptime() const;
+    void setUptime(uint64_t Uptime);
+
     std::string toJsonString();
     rapidjson::Value toJson(rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>& allocator);
     bool parseFromJson(const rapidjson::Document& document);
@@ -183,6 +186,7 @@ private:
     uint32_t m_avgTime;
 
     std::time_t m_lastStatusUpdate;
+    std::time_t m_Uptime;
 };
 
 #endif /* __CLIENT_STATUS_H__ */
